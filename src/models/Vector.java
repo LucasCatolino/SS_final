@@ -66,34 +66,35 @@ public class Vector {
         return new Vector(-x,-y);
     }
 
-    public Vector add(Vector v){
+    public void add(Vector v){
         this.x += v.x;
         this.y += v.y;
-        return new Vector(x,y);
     }
 
-    public Vector multiply(double e){
-        return new Vector(x*e,y*e);
+    public void multiply(double e){
+        set(x*e,y*e);
     }
 
-    public Vector sub(Vector v){
-        return new Vector(x - v.x, y - v.y);
+    public void sub(Vector v){
+        set(x - v.x, y - v.y);
     }
 
     static public Vector add(Vector v1, Vector v2){
-        Vector toReturn = new Vector(v1.getX(), v1.getY());
-        return  toReturn.add(v2);
+        Vector toReturn = new Vector(v1);
+        toReturn.add(v2);
+        return  toReturn;
     }
 
     static public Vector sub(Vector v1, Vector v2){
-        Vector toReturn = new Vector(v1.getX(), v1.getY());
-
-        return toReturn.sub(v2);
+        Vector toReturn = new Vector(v1);
+        toReturn.sub(v2);
+        return toReturn;
     }
 
     static public Vector multiply(Vector v1, double e){
-        Vector toReturn = new Vector(v1.getX(), v1.getY());
-        return toReturn.multiply(e);
+        Vector toReturn = new Vector(v1);
+        toReturn.multiply(e);
+        return toReturn;
     }
 
     @Override
