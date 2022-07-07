@@ -1,6 +1,6 @@
 package core;
 
-import models.Particle;
+import models.Car;
 import models.Vector;
 
 import java.io.BufferedReader;
@@ -15,14 +15,19 @@ public class Algorithm {
     //constant
     private static final double dt =0.01; //seg
     private static final double MAX_SIMULATION_TIME = 500; //seg
-    private static final double Z_VISUAL_FIELD = 4; //m
-    private static final double H_VISUAL_FIELD = 6; //m
+    private static final double VISUAL_FIELD = 5; //m
+    private static final double REACTION_TIME = 0.75; //seg
 
     //variables del sistema
-    private List<Particle> particles;
-    private int totalNumber;
-    private double spaceRadio;
-    
+    private List<Car> cars;
+
+    private  double laneWidth;
+    private double highwayLength;
+    private int lanesCount;
+    private int carCount;
+
+
+
     //para archivar
     private List<String> toFile;
 
@@ -38,54 +43,33 @@ public class Algorithm {
 
         fillToFile(currentTime);
         
-        int zombieNumber = 1;
-        int personNumber = totalNumber - zombieNumber;
 
-        while(!endCondition(currentTime, personNumber)){
+        while(!endCondition(currentTime)){
 
-            List<Particle> newPosition = new ArrayList<>();
-
-            zombieNumber = 0;
-            personNumber = 0;
+            List<Car> nextIteration = new ArrayList<>();
 
             //agarra una particula y la analiza con todas las demas
-            for ( Particle currentP : particles ) {
+            for ( Car currentCar : cars) {
 
-                Set<Particle> nearerZombies = new TreeSet<>(createComparator(currentP));  // zombies dentro del campo de vision de currentP
-                Set<Particle> contactZombies = new TreeSet<>(createComparator(currentP)); // zombies que estan tocando a currentP
-                Set<Particle> nearerHumans = new TreeSet<>(createComparator(currentP));   // humanos dentro del campo de vision de currentP
-                Set<Particle> contactHumans = new TreeSet<>(createComparator(currentP));  // humanos que estan tocando a currentP
+                Set<Car> rightLane = new TreeSet<>(createComparator(currentCar)); 
+                Set<Car> leftLane = new TreeSet<>(createComparator(currentCar));   
+                Set<Car> currentLane = new TreeSet<>(createComparator(currentCar));  
 
-                //obtengo la particulas dentro de su campo visual y oredenas de mas cercanas a lejanas
-                if(currentP.isZombie()){
-                    getNearerParticles(currentP, Z_VISUAL_FIELD, nearerZombies, contactZombies, nearerHumans, contactHumans);
-                }else{
-                    getNearerParticles(currentP, H_VISUAL_FIELD, nearerZombies, contactZombies, nearerHumans, contactHumans);
-                }
+
+                getCarsInView(currentCar, VISUAL_FIELD, currentLane, leftLane, rightLane);
+
 
                 //creo una nueva particula con los parametro con paso temporal despues
-                Particle newP = currentP.next(nearerZombies, contactZombies, nearerHumans, contactHumans, dt);
+                Car newCar = currentCar.next(currentLane,leftLane,rightLane, dt);
 
-
-                //metricas de la corrida actual
-                if(newP.isZombie()) {
-                    zombieNumber++;
-                }else {
-                    personNumber++;
-                }
 
                 //lo guardo en el nuevo espacio
-                newPosition.add(newP);
+                nextIteration.add(newCar);
 
             }//termina el for
 
-            if(totalNumber != zombieNumber + personNumber){
-                System.out.println("FALLO");
-                return;
-            }
-
             currentTime += dt;
-            particles = newPosition;
+            cars = nextIteration;
 
             fillToFile(currentTime);
         }
@@ -93,19 +77,21 @@ public class Algorithm {
     }
 
     private void fillToFile(double time) {
-    	toFile.add("" + totalNumber + "\n");
+    	/*toFile.add("" + carCount + "\n");
     	toFile.add("" + String.format("%.2f",time) + "\n");
-    	
+
     	int zombie= 0;
     	int person= 0;
-    	for (Iterator iterator = particles.iterator(); iterator.hasNext();) {
-			Particle particle = (Particle) iterator.next();
+    	for (Iterator iterator = cars.iterator(); iterator.hasNext();) {
+			Car particle = (Car) iterator.next();
     		zombie= particle.isZombie() ? 1 : 0;
 			person= (zombie == 1) ? 0 : 1;
 			toFile.add("" + String.format("%.2f", particle.getPosition().getX()) + "\t"
 					+ String.format("%.2f", particle.getPosition().getY()) + "\t"
 					+ String.format("%.2f", particle.getRadio()) + "\t" + zombie + "\t" + person + "\n");
-    	}	
+    	}
+
+    	 */
 	}
     
     private void writeOutputTxt() {
@@ -127,32 +113,16 @@ public class Algorithm {
         }
 	}
     
-    private void getNearerParticles(Particle currentP, double visualField, Set<Particle> nearerZombies,
-                                    Set<Particle> contactZombies, Set<Particle> nearerHumans, Set<Particle> contactHumans){
-        for ( Particle p: particles ) {
-            if((!currentP.equals(p)) && (currentP.getDistanceTo(p) <= visualField)){
-                if(currentP.getDistanceTo(p) <= currentP.getRadio() + p.getRadio()) {
-                    //se estan tocando
-                    if(p.isZombie()) {
-                        contactZombies.add(p);
-                    }else{
-                        contactHumans.add(p);
-                    }
-                }else{
-                    //esta en el campo visual y no se estan tocando
-                    if(p.isZombie()) {
-                        nearerZombies.add(p);
-                    }else{
-                        nearerHumans.add(p);
-                    }
-                }
-            }
+    private void getCarsInView(Car currentCar, double visualField, Set<Car> currentLane,
+                                    Set<Car> leftLane, Set<Car> rightLane){
+        for ( Car c: cars) {
+            //TODO:implementar
         }
     }
 
     //ordena de las que estan mas cerca de p a mas lejos
-    private static Comparator<Particle> createComparator(Particle p) {
-        final Particle finalP = new Particle(p);
+    private static Comparator<Car> createComparator(Car p) {
+        final Car finalP = new Car(p);
         return (p0, p1) -> {
             double ds0 = p0.getDistanceTo(finalP);
             double ds1 = p1.getDistanceTo(finalP);
@@ -160,12 +130,13 @@ public class Algorithm {
         };
     }
 
-    private boolean endCondition(double currentTime, int personNumber){
-        return personNumber == 0 || currentTime >= MAX_SIMULATION_TIME;
+    private boolean endCondition(double currentTime){
+        return currentTime >= MAX_SIMULATION_TIME;
     }
 
     private void fileReader(String staticFile, String dynamicFile){
     	//open static file
+        /*
         InputStream staticStream = Algorithm.class.getClassLoader().getResourceAsStream(staticFile);
         assert staticStream != null;
         Scanner staticScanner = new Scanner(staticStream);
@@ -177,7 +148,7 @@ public class Algorithm {
         double particleRadio = Double.parseDouble(staticScanner.next()); //Second line particle R
         staticScanner.close();
 
-        this.totalNumber= personNumber + zombieNumber;
+        this.carCount = personNumber + zombieNumber;
         
 	 	//open dynamic file
         InputStream dynamicStream = Algorithm.class.getClassLoader().getResourceAsStream(dynamicFile);
@@ -190,20 +161,22 @@ public class Algorithm {
         double xZombie= Double.parseDouble(dynamicScanner.next());
         double yZombie= Double.parseDouble(dynamicScanner.next());
         
-        particles = new ArrayList<>();
-        Particle zombie= new Particle(new Vector(xZombie, yZombie), new Vector(0, 0), particleRadio, true, spaceRadio);
-        particles.add(zombie);
+        cars = new ArrayList<>();
+        Car car= new Car(new Vector(xZombie, yZombie), new Vector(0, 0), particleRadio, );
+        cars.add(car);
         
         while (dynamicScanner.hasNext()) {
         	//Each line has X Y for person particle
 			double xPerson= Double.parseDouble(dynamicScanner.next());
 			double yPerson= Double.parseDouble(dynamicScanner.next());
 			
-			Particle person= new Particle(new Vector(xPerson, yPerson), new Vector(0, 0), particleRadio, false, spaceRadio);
-			particles.add(person);
+			Car person= new Car(new Vector(xPerson, yPerson), new Vector(0, 0), particleRadio, false, spaceRadio);
+			cars.add(person);
 		}
         
         dynamicScanner.close();
+
+         */
     }
 
     static public void main(String[] args) throws IOException {
