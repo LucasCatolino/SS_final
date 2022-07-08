@@ -9,20 +9,20 @@ import java.util.Iterator;
 
 public class Writer {
 	
-	private static final double R_P= 0.3; //Estimated radius of a human
-	private static final double MIN_DISTANCE= 1;
-	private static final int DEGREES= 360;
+	private static final double R_P= 0.9; //Estimated radius of a car
+	private static final double MIN_DISTANCE= 2;
+	private static final double LANE_CENTER= 1.75;
 		
-    public Writer(double R, int N, String type) {
+    public Writer(double length, int lanes, int particlesCant, String type) {
 
 		try {
             File file = new File("./resources/" + type + ".txt");
             FileWriter myWriter = new FileWriter("./resources/" + type + ".txt");
             try {
             	if (type.compareTo("static") == 0) {
-					this.staticFile(R, N, myWriter);
+					this.staticFile(length, lanes, particlesCant, myWriter);
 				} else {
-					this.dynamicFile(R, N, myWriter);
+					this.dynamicFile(length, lanes, particlesCant, myWriter);
 				}
 			} catch (Exception e) {
 				System.err.println("IOException");
@@ -35,51 +35,47 @@ public class Writer {
         }
     }
     
-	private void staticFile(double r, int n, FileWriter myWriter) throws IOException {
-		myWriter.write("" + n + "\n"); //N humans
-		myWriter.write("" + r + "\n"); //L
+	private void staticFile(double length, int lanes, int particlesCant, FileWriter myWriter) throws IOException {
+		myWriter.write("" + (particlesCant * lanes)+ "\n"); //N cars
+		myWriter.write("" + length + "\n"); //A
+		myWriter.write("" + lanes + "\n"); //A
 		myWriter.write("" + R_P + "\n");
 	}
 
-	private void dynamicFile(double r, int n, FileWriter myWriter) throws IOException {
-		Point2D center = new Point2D.Double(r, r);
+	private void dynamicFile(double length, int lanes, Integer particlesCant, FileWriter myWriter) throws IOException {
+		
 		ArrayList<Point2D> particles= new ArrayList<>();
-		particles.add(center);
-		double limitInf= MIN_DISTANCE + 2 * R_P;
-		double limitSup= r - R_P;
 		
 		//first line initial time
 		myWriter.write("0\n");
 		
-		//first particle centered and still
-		myWriter.write("" + r + "\t" + r + "\n");
-		
-		//write n particles not overlapped
-		while (particles.size() <= n) {
-			double distance= (Math.random() * (limitSup - limitInf) + limitInf);
-			double degrees= Math.random() * DEGREES;
-			
-			double x= distance * Math.cos(Math.toRadians(degrees)) + r;
-			double y= distance * Math.sin(Math.toRadians(degrees)) + r;
-			
-			Point2D auxPoint = new Point2D.Float();
-			auxPoint.setLocation(x, y);
-			
-			boolean particleOverlapped= false;
-
-			for (Iterator particle = particles.iterator(); particle.hasNext();) {
-				Point2D point2d = (Point2D) particle.next();
-				if (point2d.distance(auxPoint) < (R_P + R_P)) {
-					particleOverlapped= true;
-					break;
+		//for each lane, insert particles
+		for (int i = 0; i < lanes; i++) {
+			//write particlesCant particles not overlapped
+			while (particles.size() < particlesCant) {
+				double x= (Math.random() * (length - R_P) + R_P);
+				double y= LANE_CENTER + i * 2 * LANE_CENTER;
+				
+				Point2D auxPoint = new Point2D.Float();
+				auxPoint.setLocation(x, y);
+				
+				boolean particleOverlapped= false;
+				
+				for (Iterator particle = particles.iterator(); particle.hasNext();) {
+					Point2D point2d = (Point2D) particle.next();
+					if (point2d.distance(auxPoint) < (MIN_DISTANCE)) {
+						particleOverlapped= true;
+						break;
+					}
+				}
+				
+				if (!particleOverlapped) {
+					particles.add(auxPoint);
+					
+					myWriter.write("" + String.format("%.2f",x) + "\t" + y + "\t" + R_P + "\n"); //x y not overlapped				
 				}
 			}
-
-			if (!particleOverlapped) {
-				particles.add(auxPoint);
-				
-				myWriter.write("" + x + "\t" + y + "\n"); //x y not overlapped				
-			}
+			particles.clear();
 		}
 	}
 	
