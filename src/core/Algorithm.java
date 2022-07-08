@@ -54,14 +54,14 @@ public class Algorithm {
 
                 for (Car currentCar : lanes[lane]) {
                     Set<Car> rightLane = new TreeSet<>(createComparator(currentCar));
-                    Set<Car> leftLane = new TreeSet<>(createComparator(currentCar));
+                    Set<Car> leftLane = new TreeSet<>(createComparator(currentCar)); //Poner en null left y right si no existen.
                     Set<Car> currentLane = new TreeSet<>(createComparator(currentCar)); // solo el próximo?
 
 
                     getCarsInView(lane, currentCar, VISUAL_FIELD, currentLane, leftLane, rightLane);
 
 
-                    Car newCar = currentCar.next(currentLane, leftLane, rightLane, dt);
+                    Car newCar = currentCar.next(lane,currentLane, leftLane, rightLane, dt);
 
                     if(checkPosition(newCar) < 1){
                         newCar.getPosition().sub(new Vector(highwayLength,0));
@@ -229,6 +229,6 @@ public class Algorithm {
 		algorithm.run();
 		System.out.println("End");
 	}
-    
+
 }
 

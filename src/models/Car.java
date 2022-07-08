@@ -121,13 +121,13 @@ public class Car {
     //------------------------------------------
 
     //devuelve una particula con la nueva posicion;
-    public Car next(Set<Car> currentLane, Set<Car> leftLane, Set<Car> rightLane, double dt){
+    public Car next(int laneNumber, Set<Car> currentLane, Set<Car> leftLane, Set<Car> rightLane, double dt){
 
         Car newCar = new Car(this);
 
 
         //aplica la heurística
-        Vector target = heuristic.getTarget(newCar , currentLane,leftLane,rightLane);
+        Vector target = heuristic.getTarget(newCar ,currentLane, laneNumber,leftLane,rightLane,dt);
 
         //manejo de velocidades maxima ?????
 
