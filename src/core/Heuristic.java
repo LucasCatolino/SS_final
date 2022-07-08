@@ -8,9 +8,6 @@ import java.util.Set;
 
 public abstract class Heuristic {
 
-	public double getTargetV() {
-		return targetV;
-	}
 
 	private final double targetV;
 
@@ -25,5 +22,27 @@ public abstract class Heuristic {
 
 		return null;
 	}
+
+
+
+	public boolean changeLane(Car c, Set<Car> carsInView,int laneNumber){
+		if(carsInView.isEmpty()){
+			c.setLane(laneNumber);
+			return true;
+		}
+		else{
+			for(Car c : carsInView){
+				
+			}
+		}
+
+		return true;
+	}
+
+
+	public double getTargetV() {
+		return targetV;
+	}
+
 
 }

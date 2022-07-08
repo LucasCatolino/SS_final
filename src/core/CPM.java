@@ -6,11 +6,9 @@ import models.Vector;
 import java.util.TreeSet;
 
 public class CPM {
-    private static final double MAX_RADIO = 0.32;
-    private static final double MIN_RADIO = 0.15;
+    private static final double MAX_RADIO = 1.2;//m
+    private static final double MIN_RADIO = 0.9;
     private static final double TOU = 0.5; //seg
-    static private  final double CRASH_VELOCITY = 10; // m/s
-    //private static final double BETA = 1;
 
     static public void apply(Car p, Vector target, double dt, TreeSet<Car> contactP){
 
@@ -48,21 +46,13 @@ public class CPM {
             }
         }
 
-        if(checkPosition(p) <= 0){
-            //TODO: llegué al final de la ruta, volver al principio
-        }
+
     }
 
     static private Vector getEscapeVerse(Car p, Car contactP){
         Vector toReturn = Vector.sub(p.getPosition(), contactP.getPosition());
 
         return toReturn.getVersor();
-    }
-
-    //retorna 1 si esta dentro de la ruta, 0 si esta en el borde, -1 si esta afuera
-    static private int checkPosition(Car p){
-        //TODO: checkiar (final de la ruta)
-     return 1;
     }
 
 
