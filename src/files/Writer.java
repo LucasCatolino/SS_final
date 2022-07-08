@@ -72,7 +72,7 @@ public class Writer {
 				if (!particleOverlapped) {
 					particles.add(auxPoint);
 					
-					myWriter.write("" + String.format("%.2f",x) + "\t" + y + "\t" + i + "\t" + R_P + "\n"); //x y not overlapped				
+					myWriter.write("" + String.format("%.2f",x) + "\t" + y + "\t" + i + "\n"); //x y not overlapped
 				}
 			}
 			particles.clear();
