@@ -8,8 +8,8 @@ import java.util.TreeSet;
 public class PassiveHeuristic extends Heuristic {
 
 	static final private double PASSIVE_CONST = 5;
-	static final private double MAX_V = 100;
-	static final private double MIN_V = 80;
+	static final private double MAX_V = 22;
+	static final private double MIN_V = 14;
 
 
 	public PassiveHeuristic() {

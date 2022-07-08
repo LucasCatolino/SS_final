@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.Array;
 import java.util.*;
 
 public class Algorithm {
@@ -48,31 +49,50 @@ public class Algorithm {
         while(!endCondition(currentTime)){
 
             List<Car> nextIteration = new ArrayList<>();
-
+            List<Car>[] lanes = (ArrayList<Car>[]) new ArrayList[5];
             //agarra una particula y la analiza con todas las demas
-//            for ( Car currentCar : cars) {
-//
-//                Set<Car> rightLane = new TreeSet<>(createComparator(currentCar)); 
-//                Set<Car> leftLane = new TreeSet<>(createComparator(currentCar));   
-//                Set<Car> currentLane = new TreeSet<>(createComparator(currentCar));  
-//
-//
-//                getCarsInView(currentCar, VISUAL_FIELD, currentLane, leftLane, rightLane);
-//
-//
-//                //creo una nueva particula con los parametro con paso temporal despues
-//                Car newCar = currentCar.next(currentLane,leftLane,rightLane, dt);
-//
-//
-//                //lo guardo en el nuevo espacio
-//                nextIteration.add(newCar);
-//
-//            }//termina el for
-//
-//            currentTime += dt;
-//            cars = nextIteration;
-//
-//            fillToFile(currentTime);
+            for (int lane=0; lane < lanesCount; lane++){
+
+
+                for(Car currentCar : lanes[lane]){
+                    Set<Car> rightLane = new TreeSet<>(createComparator(currentCar));
+                    Set<Car> leftLane = new TreeSet<>(createComparator(currentCar));
+                    Set<Car> currentLane = new TreeSet<>(createComparator(currentCar));
+
+                    //get cars in view
+
+                    if(lane >= 1){
+                        for(Car c : lanes[lane-1]){
+                            if(c.getDistanceTo(currentCar) <= VISUAL_FIELD + 2*c.getRadio()){
+                                rightLane.add(c);
+                            }
+                        }
+                    }
+                    if(lane < lanesCount-1){
+                        for(Car c : lanes[lane+1]){
+                            if(c.getDistanceTo(currentCar) <= VISUAL_FIELD + 2*c.getRadio()){
+                                leftLane.add(c);
+                            }
+                        }
+                    }
+
+                    for(Car c : lanes[lane]){
+                        if(c.getPosition().getX() > currentCar.getPosition().getX()){
+                            if(c.getDistanceTo(currentCar) <= VISUAL_FIELD + 2*c.getRadio()){
+                                currentLane.add(c);
+                            }
+                        }
+                    }
+
+                    Car newCar = currentCar.next(currentLane,leftLane,rightLane, dt);
+                    nextIteration.add(newCar);
+                }
+            }
+
+            currentTime += dt;
+            cars = nextIteration;
+
+            fillToFile(currentTime);
         }
         writeOutputTxt();
     }
