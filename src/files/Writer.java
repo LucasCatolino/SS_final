@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 
 
 public class Writer {
@@ -13,7 +14,8 @@ public class Writer {
 	private static final double MIN_DISTANCE= 2;
 	private static final double LANE_CENTER= 1.75;
 		
-    public Writer(double length, int lanes, int particlesCant, String type) {
+    public Writer(double length, int lanes, int particlesCant, double aggressiveProb, String type) {
+    	Locale.setDefault(Locale.US);
 
 		try {
             File file = new File("./resources/" + type + ".txt");
@@ -22,7 +24,7 @@ public class Writer {
             	if (type.compareTo("static") == 0) {
 					this.staticFile(length, lanes, particlesCant, myWriter);
 				} else {
-					this.dynamicFile(length, lanes, particlesCant, myWriter);
+					this.dynamicFile(length, lanes, particlesCant, aggressiveProb, myWriter);
 				}
 			} catch (Exception e) {
 				System.err.println("IOException");
@@ -42,12 +44,14 @@ public class Writer {
 		myWriter.write("" + R_P + "\n");
 	}
 
-	private void dynamicFile(double length, int lanes, Integer particlesCant, FileWriter myWriter) throws IOException {
+	private void dynamicFile(double length, int lanes, Integer particlesCant, double aggressiveProb, FileWriter myWriter) throws IOException {
 		
 		ArrayList<Point2D> particles= new ArrayList<>();
 		
 		//first line initial time
 		myWriter.write("0\n");
+		
+		int aggressiveParticle= 0;
 		
 		//for each lane, insert particles
 		for (int i = 0; i < lanes; i++) {
@@ -72,7 +76,9 @@ public class Writer {
 				if (!particleOverlapped) {
 					particles.add(auxPoint);
 					
-					myWriter.write("" + String.format("%.2f",x) + "\t" + y + "\t" + i + "\n"); //x y not overlapped
+					aggressiveParticle= (Math.random() < aggressiveProb) ? 1 : 0;
+					
+					myWriter.write("" + String.format("%.2f",x) + "\t" + String.format("%.2f",y) + "\t" + i + "\t" + aggressiveParticle + "\n"); //x y not overlapped
 				}
 			}
 			particles.clear();

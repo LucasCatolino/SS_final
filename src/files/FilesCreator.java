@@ -11,6 +11,7 @@ public class FilesCreator {
 	private static final double DEFAULT_A= 500;
 	private static final int DEFAULT_N= 5;
 	private static final int DEFAULT_N_PART= 25;
+	private static final double DEFAULT_AGGRESIVE= 0.25;
 	
     public static void main(String[] args) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IOException {
 
@@ -43,11 +44,21 @@ public class FilesCreator {
 			//do nothing
 		}
 		int N= (NPartInput > 0) ? NPartInput : DEFAULT_N_PART;
+		
+		System.out.println("Insert percentage of agressive drivers (> 0, default %25)");
+		BufferedReader readerAggresive= new BufferedReader(new InputStreamReader(System.in));
+		double aggresiveInput= 0;
+		try {
+			aggresiveInput = Double.parseDouble(readerAggresive.readLine());			
+		} catch (Exception e) {
+			//do nothing
+		}
+		double aggressiveProb= (aggresiveInput > 0) ? (double) aggresiveInput/100 : DEFAULT_AGGRESIVE;
 
     	System.out.println("A: " + A + " n: " + n + " N: " + N);
     	
-    	Writer writerStatic = new Writer(A, n, N, "static");
-		Writer writerDynamic = new Writer(A, n, N, "dynamic");
+    	Writer writerStatic = new Writer(A, n, N, aggressiveProb, "static");
+		Writer writerDynamic = new Writer(A, n, N, aggressiveProb, "dynamic");
     }
 
 }
