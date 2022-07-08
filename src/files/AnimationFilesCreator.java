@@ -10,24 +10,28 @@ import java.util.Scanner;
 
 import core.Algorithm;
 
-public class
-AnimationFilesCreator {
+public class AnimationFilesCreator {
+	
+	private static double MAX_VEL= 24;
+	private static final double LANE_WIDTH= 3.5;
 	
 	private static void createAnimationFile(String staticFile, String dynamicFile) {
-		String outName= dynamicFile.substring(0, dynamicFile.length() - 4);
-		Double time;
-		Double x;
-		Double y;
-		Double r;
-		int zombie;
-		int person;
+		String outName= dynamicFile.substring(0, dynamicFile.length() - 4); //removes 'End' from name
+		double time;
+		double x;
+		double y;
+		double r;
+		double velocity;
+		double velocityGradient;
 		
 		//open static file
         InputStream staticStream = Algorithm.class.getClassLoader().getResourceAsStream(staticFile);
         assert staticStream != null;
         Scanner staticScanner = new Scanner(staticStream);
-        int totalParticles= Integer.parseInt(staticScanner.next()) + 1; //+1 because static contains N for humans
-        double spaceRadio= Double.parseDouble(staticScanner.next());
+        int carCount= Integer.parseInt(staticScanner.next()); //First line N
+        double highwayLength= Double.parseDouble(staticScanner.next()); //Second line A
+        double lanesCount = Integer.parseInt(staticScanner.next()); //Third line n
+        double topY= lanesCount * LANE_WIDTH;
         staticScanner.close();
 		
 		//open dynamic file
@@ -44,23 +48,23 @@ AnimationFilesCreator {
             	//Time
             	time= Double.parseDouble(dynamicScanner.next());
             	
-            	myWriter.write("" + (totalParticles + 5) + "\n"); //Add 5 for visualization
+            	myWriter.write("" + (carCount + 4) + "\n"); //Add 4 for visualization
             	myWriter.write("" + time + "\n");
-            	for (int i = 0; i < totalParticles; i++) {
-                	//X Y R Zombie Person
+            	for (int i = 0; i < carCount; i++) {
+                	//X Y Radius Color
             		x= Double.parseDouble(dynamicScanner.next());
             		y= Double.parseDouble(dynamicScanner.next());
             		r= Double.parseDouble(dynamicScanner.next());
-            		zombie= Integer.parseInt(dynamicScanner.next());
-            		person= Integer.parseInt(dynamicScanner.next());
-            		myWriter.write("" + x + "\t" + y + "\t" + r + "\t" + zombie + "\t" + person + "\t0\t0\n");
+            		velocity= Double.parseDouble(dynamicScanner.next());
+            		velocityGradient= 1 - (double) velocity/MAX_VEL;
+            		
+            		myWriter.write("" + x + "\t" + y + "\t" + r + "\t" + velocityGradient + "\t1\n");
 				}
             	//Add 5 false particles for visualization
-            	myWriter.write("0\t0\t0.1\t0\t0\t0\t0\n");
-                myWriter.write("0\t" + (2*spaceRadio) + "\t0.1\t0\t0\t0\t0\n");
-                myWriter.write("" + (2*spaceRadio) + "\t0\t0.1\t0\t0\t0\t0\n");
-                myWriter.write("" + (2*spaceRadio) + "\t" + (2*spaceRadio) + "\t0.1\t0\t0\t0\t0\n");
-                myWriter.write("" + (spaceRadio+0.001) + "\t" +	(spaceRadio+0.001) + "\t" + spaceRadio + "\t1\t1\t0\t0.8\n");
+            	myWriter.write("0\t0\t0\t0\t0\n");
+                myWriter.write("0\t" + topY + "\t0\t0\t0\n");
+                myWriter.write("" + highwayLength + "\t0\t0\t0\t0\n");
+                myWriter.write("" + highwayLength + "\t" + topY + "\t0\t0\t0\n");
     		}
             myWriter.close();
         } catch (IOException e) {
