@@ -17,6 +17,7 @@ public class Car {
     private Vector velocity;
     private Heuristic heuristic;
     private boolean isAggressive;
+    private int lane;
     private final int id;
 
     public Car(Car car){
@@ -24,14 +25,16 @@ public class Car {
         velocity = new Vector(car.velocity.getX(), car.velocity.getY());
         this.id = car.id;
         heuristic = car.heuristic;
+        this.lane = car.lane;
         this.radio = car.radio;
         this.isAggressive = car.isAggressive;
     }
 
-    public Car(Vector position, Vector velocity, double radio, boolean isAggressive) {
+    public Car(Vector position, Vector velocity, int lane, double radio, boolean isAggressive) {
         this.position = position;
         this.velocity = velocity;
         this.radio = radio;
+        this.lane = lane;
         this.id = getNextId();
         this.isAggressive = isAggressive;
         if(isAggressive){
