@@ -65,3 +65,7 @@ local.properties
 .loadpath
 /resources/
 /out/**
+
+# IntellIJ
+/.idea/
+*.iml
