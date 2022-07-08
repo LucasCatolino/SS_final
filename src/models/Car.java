@@ -20,6 +20,36 @@ public class Car {
     private int lane;
     private final int id;
 
+    public Heuristic getHeuristic() {
+        return heuristic;
+    }
+
+    public void setHeuristic(Heuristic heuristic) {
+        this.heuristic = heuristic;
+    }
+
+    public boolean isAggressive() {
+        return isAggressive;
+    }
+
+    public void setAggressive(boolean aggressive) {
+        isAggressive = aggressive;
+    }
+
+    public int getLane() {
+        return lane;
+    }
+
+    public void setLane(int lane) {
+        this.lane = lane;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+
+
     public Car(Car car){
         position = new Vector(car.position.getX(), car.position.getY());
         velocity = new Vector(car.velocity.getX(), car.velocity.getY());

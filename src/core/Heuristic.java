@@ -7,6 +7,11 @@ import models.Vector;
 import java.util.Set;
 
 public abstract class Heuristic {
+
+	public double getTargetV() {
+		return targetV;
+	}
+
 	private final double targetV;
 
 	public Heuristic(double aggressiveConstant, double maxV, double minV) {

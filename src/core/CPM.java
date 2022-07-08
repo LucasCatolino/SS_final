@@ -14,20 +14,13 @@ public class CPM {
 
     static public void apply(Car p, Vector target, double dt, TreeSet<Car> contactP){
 
-
-        if(checkPosition(p) <= 0){
-            //TODO: llegué al final de la ruta, volver al principio
-        }
-
-       else if(!contactP.isEmpty()){
+       if(!contactP.isEmpty()){
             //get escape verse
             //TODO: a checkiar
             Vector escapeVerse = getEscapeVerse(p, contactP.first());
 
-
-
             //update Velocity (crash velocity)
-            p.setVelocity(Vector.multiply(escapeVerse, CRASH_VELOCITY));
+            p.setVelocity(Vector.multiply(escapeVerse, p.getHeuristic().getTargetV()));
 
             //update vector position
             p.getPosition().add(Vector.multiply(p.getVelocity(), dt));
@@ -37,7 +30,7 @@ public class CPM {
 
         }else {
             //update speed
-            double newSpeed =CRASH_VELOCITY*( (p.getRadio() - MIN_RADIO)/(MAX_RADIO - MIN_RADIO));
+            double newSpeed =p.getHeuristic().getTargetV()*( (p.getRadio() - MIN_RADIO)/(MAX_RADIO - MIN_RADIO));
 
             //update Velocity
             Vector eTarget = Vector.sub(target, p.getPosition()).getVersor();
@@ -53,6 +46,10 @@ public class CPM {
             if(p.getRadio() > MAX_RADIO){
                 p.setRadio(MAX_RADIO);
             }
+        }
+
+        if(checkPosition(p) <= 0){
+            //TODO: llegué al final de la ruta, volver al principio
         }
     }
 

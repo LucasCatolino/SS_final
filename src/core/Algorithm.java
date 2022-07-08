@@ -21,7 +21,7 @@ public class Algorithm {
 
     //variables del sistema
     //private ArrayList<Car> cars;
-    ArrayList<Car>[] lanes;
+    private ArrayList<Car>[] lanes;
 
     private double laneWidth;
     private double highwayLength;
@@ -46,10 +46,10 @@ public class Algorithm {
         fillToFile(currentTime);
         
 
+
         while(!endCondition(currentTime)){
 
-            List<Car> nextIteration = new ArrayList<>();
-            List<Car>[] lanes = (ArrayList<Car>[]) new ArrayList[5];
+            ArrayList<Car>[] newLanes = (ArrayList<Car>[]) new ArrayList[lanesCount];
             //agarra una particula y la analiza con todas las demas
             for (int lane=0; lane < lanesCount; lane++){
 
@@ -57,40 +57,21 @@ public class Algorithm {
                 for(Car currentCar : lanes[lane]){
                     Set<Car> rightLane = new TreeSet<>(createComparator(currentCar));
                     Set<Car> leftLane = new TreeSet<>(createComparator(currentCar));
-                    Set<Car> currentLane = new TreeSet<>(createComparator(currentCar));
+                    Set<Car> currentLane = new TreeSet<>(createComparator(currentCar)); // solo el próximo?
 
-                    //get cars in view
 
-                    if(lane >= 1){
-                        for(Car c : lanes[lane-1]){
-                            if(c.getDistanceTo(currentCar) <= VISUAL_FIELD + 2*c.getRadio()){
-                                rightLane.add(c);
-                            }
-                        }
-                    }
-                    if(lane < lanesCount-1){
-                        for(Car c : lanes[lane+1]){
-                            if(c.getDistanceTo(currentCar) <= VISUAL_FIELD + 2*c.getRadio()){
-                                leftLane.add(c);
-                            }
-                        }
-                    }
+                    getCarsInView(lane,currentCar,VISUAL_FIELD,currentLane,leftLane,rightLane);
 
-                    for(Car c : lanes[lane]){
-                        if(c.getPosition().getX() > currentCar.getPosition().getX()){
-                            if(c.getDistanceTo(currentCar) <= VISUAL_FIELD + 2*c.getRadio()){
-                                currentLane.add(c);
-                            }
-                        }
-                    }
 
                     Car newCar = currentCar.next(currentLane,leftLane,rightLane, dt);
-                    nextIteration.add(newCar);
+
+                    newLanes[newCar.getLane()].add(newCar);
                 }
             }
 
             currentTime += dt;
-            cars = nextIteration;
+            //
+            lanes = newLanes;
 
             fillToFile(currentTime);
         }
@@ -134,11 +115,30 @@ public class Algorithm {
         }
 	}
     
-    private void getCarsInView(Car currentCar, double visualField, Set<Car> currentLane,
+    private void getCarsInView(int lane,Car currentCar, double visualField, Set<Car> currentLane,
                                     Set<Car> leftLane, Set<Car> rightLane){
-//        for ( Car c: cars) {
-//            //TODO:implementar
-//        }
+
+        if(lane > 0){
+            for(Car c : lanes[lane-1]){
+                if(c.getDistanceTo(currentCar) <= VISUAL_FIELD + 2*c.getRadio()){
+                    rightLane.add(c);
+                }
+            }
+        }
+        if(lane < lanesCount-1){
+            for(Car c : lanes[lane+1]){
+                if(c.getDistanceTo(currentCar) <= VISUAL_FIELD + 2*c.getRadio()){
+                    leftLane.add(c);
+                }
+            }
+        }
+
+        for(Car c : lanes[lane]){
+            if(c.getDistanceTo(currentCar) <= VISUAL_FIELD + 2*c.getRadio()){
+                currentLane.add(c);
+            }
+
+        }
     }
 
     //ordena de las que estan mas cerca de p a mas lejos
