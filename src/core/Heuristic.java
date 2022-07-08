@@ -18,6 +18,7 @@ public abstract class Heuristic {
 
 	public Vector getTarget(Car c, Set<Car> currentLane,int laneNumber, Set<Car> leftLane, Set<Car> rightLane, double dt){
 		if(currentLane.isEmpty()){
+			System.out.println("Current lane is empty!\n");
 			return new Vector(c.getPosition().getX() + 100,0);
 		}
 		Car frontCar = (Car) currentLane.toArray()[0];

@@ -133,7 +133,7 @@ public class Car {
 
 
         //si el target es null no muevo la particula
-        CPM.apply(newCar, target, dt,null);
+        CPM.apply(newCar, target, dt, new TreeSet<>());
 
         //retorno la nueva particula con la nueva posiciones
         return newCar;

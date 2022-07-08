@@ -14,11 +14,13 @@ public class AnimationFilesCreator {
 	
 	private static double MAX_VEL= 24;
 	private static final double LANE_WIDTH= 3.5;
+	private static final double LANE_CENTER = 1.75;
 	
 	private static void createAnimationFile(String staticFile, String dynamicFile) {
 		String outName= dynamicFile.substring(0, dynamicFile.length() - 4); //removes 'End' from name
 		double time;
 		double x;
+		int lane;
 		double y;
 		double r;
 		double velocity;
@@ -52,8 +54,10 @@ public class AnimationFilesCreator {
             	myWriter.write("" + time + "\n");
             	for (int i = 0; i < carCount; i++) {
                 	//X Y Radius Color
-            		x= Double.parseDouble(dynamicScanner.next());
-            		y= Double.parseDouble(dynamicScanner.next());
+					dynamicScanner.next(); //skip id
+					lane = Integer.parseInt(dynamicScanner.next());
+					x= Double.parseDouble(dynamicScanner.next());
+					y = LANE_CENTER + lane*LANE_WIDTH;
             		r= Double.parseDouble(dynamicScanner.next());
             		velocity= Double.parseDouble(dynamicScanner.next());
             		velocityGradient= 1 - (double) velocity/MAX_VEL;
