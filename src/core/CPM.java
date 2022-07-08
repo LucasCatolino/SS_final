@@ -13,6 +13,7 @@ public class CPM {
     static public void apply(Car p, Vector target, double dt, TreeSet<Car> contactP){
 
        if(!contactP.isEmpty()){
+           System.out.println("NULL WTF\n");
             //get escape verse
             //TODO: a checkiar
             Vector escapeVerse = getEscapeVerse(p, contactP.first());
@@ -28,10 +29,11 @@ public class CPM {
 
         }else {
             //update speed
-            double newSpeed =p.getHeuristic().getTargetV()*( (p.getRadio() - MIN_RADIO)/(MAX_RADIO - MIN_RADIO));
+
+            double newSpeed =p.getHeuristic().getCurrentV();//*( (p.getRadio() - MIN_RADIO)/(MAX_RADIO - MIN_RADIO));
 
             //update Velocity
-            Vector eTarget = Vector.sub(target, p.getPosition()).getVersor();
+            Vector eTarget = new Vector(1,0);// Vector.sub(target, p.getPosition()).getVersor();
             p.setVelocity(Vector.multiply(eTarget, newSpeed));
 
             //update vector position

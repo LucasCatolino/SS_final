@@ -16,7 +16,7 @@ public class Algorithm {
     //constant
     private static final double dt = 0.001; //seg
     private static final double MAX_SIMULATION_TIME = 10; //seg
-    private static final double VISUAL_FIELD = 0.5; //m
+    private static final double VISUAL_FIELD = 5; //m
     private static final double REACTION_TIME = 0.75; //seg
 
     //variables del sistema
@@ -68,7 +68,6 @@ public class Algorithm {
                     if(checkPosition(newCar) < 1){
                         newCar.getPosition().sub(new Vector(highwayLength,0));
                     }
-                    System.out.println(newCar.getId());
 
                     newLanes[newCar.getLane()].add(newCar);
                 }
@@ -79,7 +78,6 @@ public class Algorithm {
             lanes = newLanes;
             fillToFile(currentTime);
         }
-        System.out.println("Output write");
         writeOutputTxt();
     }
 
@@ -135,7 +133,7 @@ public class Algorithm {
         }
 
         for (Car c : lanes[lane]) {
-            if (c.getDistanceTo(currentCar) <= VISUAL_FIELD + 2 * c.getRadio()) {
+            if (c.getDistanceTo(currentCar) <= VISUAL_FIELD + 2 * c.getRadio() && !c.equals(currentCar) && c.getPosition().getX() > currentCar.getPosition().getX()) {
                 currentLane.add(c);
             }
 

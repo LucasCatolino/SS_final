@@ -20,6 +20,7 @@ public class Car {
     private int lane;
     private final int id;
 
+
     public Heuristic getHeuristic() {
         return heuristic;
     }
