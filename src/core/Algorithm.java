@@ -19,9 +19,10 @@ public class Algorithm {
     private static final double REACTION_TIME = 0.75; //seg
 
     //variables del sistema
-    private List<Car> cars;
+    //private ArrayList<Car> cars;
+    ArrayList<Car>[] lanes;
 
-    private  double laneWidth;
+    private double laneWidth;
     private double highwayLength;
     private int lanesCount;
     private int carCount;
@@ -49,29 +50,29 @@ public class Algorithm {
             List<Car> nextIteration = new ArrayList<>();
 
             //agarra una particula y la analiza con todas las demas
-            for ( Car currentCar : cars) {
-
-                Set<Car> rightLane = new TreeSet<>(createComparator(currentCar)); 
-                Set<Car> leftLane = new TreeSet<>(createComparator(currentCar));   
-                Set<Car> currentLane = new TreeSet<>(createComparator(currentCar));  
-
-
-                getCarsInView(currentCar, VISUAL_FIELD, currentLane, leftLane, rightLane);
-
-
-                //creo una nueva particula con los parametro con paso temporal despues
-                Car newCar = currentCar.next(currentLane,leftLane,rightLane, dt);
-
-
-                //lo guardo en el nuevo espacio
-                nextIteration.add(newCar);
-
-            }//termina el for
-
-            currentTime += dt;
-            cars = nextIteration;
-
-            fillToFile(currentTime);
+//            for ( Car currentCar : cars) {
+//
+//                Set<Car> rightLane = new TreeSet<>(createComparator(currentCar)); 
+//                Set<Car> leftLane = new TreeSet<>(createComparator(currentCar));   
+//                Set<Car> currentLane = new TreeSet<>(createComparator(currentCar));  
+//
+//
+//                getCarsInView(currentCar, VISUAL_FIELD, currentLane, leftLane, rightLane);
+//
+//
+//                //creo una nueva particula con los parametro con paso temporal despues
+//                Car newCar = currentCar.next(currentLane,leftLane,rightLane, dt);
+//
+//
+//                //lo guardo en el nuevo espacio
+//                nextIteration.add(newCar);
+//
+//            }//termina el for
+//
+//            currentTime += dt;
+//            cars = nextIteration;
+//
+//            fillToFile(currentTime);
         }
         writeOutputTxt();
     }
@@ -115,9 +116,9 @@ public class Algorithm {
     
     private void getCarsInView(Car currentCar, double visualField, Set<Car> currentLane,
                                     Set<Car> leftLane, Set<Car> rightLane){
-        for ( Car c: cars) {
-            //TODO:implementar
-        }
+//        for ( Car c: cars) {
+//            //TODO:implementar
+//        }
     }
 
     //ordena de las que estan mas cerca de p a mas lejos
@@ -135,20 +136,19 @@ public class Algorithm {
     }
 
     private void fileReader(String staticFile, String dynamicFile){
+    	
     	//open static file
-        /*
         InputStream staticStream = Algorithm.class.getClassLoader().getResourceAsStream(staticFile);
         assert staticStream != null;
         Scanner staticScanner = new Scanner(staticStream);
         
-        int personNumber= Integer.parseInt(staticScanner.next()); //First line N
-        int zombieNumber= 1;
-        //variable auxiliares
-        spaceRadio = Double.parseDouble(staticScanner.next()); //Second line R
-        double particleRadio = Double.parseDouble(staticScanner.next()); //Second line particle R
+        this.carCount= Integer.parseInt(staticScanner.next()); //First line N
+        this.highwayLength = Double.parseDouble(staticScanner.next()); //Second line A
+        this.lanesCount= Integer.parseInt(staticScanner.next()); //Third line n
+        double particleRadio = Double.parseDouble(staticScanner.next()); //Forth line particle R
         staticScanner.close();
-
-        this.carCount = personNumber + zombieNumber;
+        
+        this.lanes= new ArrayList[lanesCount];
         
 	 	//open dynamic file
         InputStream dynamicStream = Algorithm.class.getClassLoader().getResourceAsStream(dynamicFile);
@@ -157,26 +157,33 @@ public class Algorithm {
         
         dynamicScanner.next(); //First line time
         
-        //Second line has X Y for zombie particle
-        double xZombie= Double.parseDouble(dynamicScanner.next());
-        double yZombie= Double.parseDouble(dynamicScanner.next());
+        int carsPerLane= carCount / lanesCount;
         
-        cars = new ArrayList<>();
-        Car car= new Car(new Vector(xZombie, yZombie), new Vector(0, 0), particleRadio, );
-        cars.add(car);
+        double xCar= 0;
+        double yCar= 0;
+        int laneNumber= 0;
+        int aggressiveCar= 0;
+        boolean aggressive= false;
         
         while (dynamicScanner.hasNext()) {
-        	//Each line has X Y for person particle
-			double xPerson= Double.parseDouble(dynamicScanner.next());
-			double yPerson= Double.parseDouble(dynamicScanner.next());
-			
-			Car person= new Car(new Vector(xPerson, yPerson), new Vector(0, 0), particleRadio, false, spaceRadio);
-			cars.add(person);
+        	ArrayList<Car> cars = new ArrayList<>();
+        	for (int i = 0; i < carsPerLane; i++) {
+        		//Each line has X Y, lane and aggressive
+        		xCar= Double.parseDouble(dynamicScanner.next());
+        		yCar= Double.parseDouble(dynamicScanner.next());
+        		laneNumber= Integer.parseInt(dynamicScanner.next());
+        		aggressiveCar= Integer.parseInt(dynamicScanner.next());
+        		
+        		aggressive= (aggressiveCar == 1) ? true : false;
+        		
+        		Car car= new Car(new Vector(xCar, yCar), new Vector(24,0), laneNumber, particleRadio, aggressive);
+        		
+        		cars.add(car);				
+			}
+        	lanes[laneNumber]= cars;
 		}
         
         dynamicScanner.close();
-
-         */
     }
 
     static public void main(String[] args) throws IOException {
@@ -194,7 +201,7 @@ public class Algorithm {
 		System.out.println("Starting with " + staticFile + ", " + dynamicFile);
 		
 		Algorithm algorithm= new Algorithm(staticFile, dynamicFile);
-		algorithm.run();
+		//algorithm.run();
 		System.out.println("End");
 	}
 
