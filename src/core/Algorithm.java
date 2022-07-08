@@ -229,19 +229,6 @@ public class Algorithm {
 		algorithm.run();
 		System.out.println("End");
 	}
-
-        System.out.println("Dynamic");
-        BufferedReader readerDynamic = new BufferedReader(new InputStreamReader(System.in));
-        String dynamicInput = readerDynamic.readLine();
-
-        String staticFile = (staticInput.length() == 0) ? "static.txt" : staticInput;
-        String dynamicFile = (dynamicInput.length() == 0) ? "dynamic.txt" : dynamicInput;
-
-        System.out.println("Starting with " + staticFile + ", " + dynamicFile);
-
-        Algorithm algorithm = new Algorithm(staticFile, dynamicFile);
-        //algorithm.run();
-        System.out.println("End");
-    }
+    
 }
 

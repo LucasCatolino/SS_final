@@ -25,14 +25,14 @@ public abstract class Heuristic {
 
 
 
-	public boolean changeLane(Car c, Set<Car> carsInView,int laneNumber){
+	public boolean changeLane(Car currentCar, Set<Car> carsInView,int laneNumber){
 		if(carsInView.isEmpty()){
-			c.setLane(laneNumber);
+			currentCar.setLane(laneNumber);
 			return true;
 		}
 		else{
 			for(Car c : carsInView){
-				
+				if(c )
 			}
 		}
 
