@@ -79,21 +79,17 @@ public class Algorithm {
     }
 
     private void fillToFile(double time) {
-    	/*toFile.add("" + carCount + "\n");
+    	toFile.add("" + carCount + "\n");
     	toFile.add("" + String.format("%.2f",time) + "\n");
 
-    	int zombie= 0;
-    	int person= 0;
-    	for (Iterator iterator = cars.iterator(); iterator.hasNext();) {
-			Car particle = (Car) iterator.next();
-    		zombie= particle.isZombie() ? 1 : 0;
-			person= (zombie == 1) ? 0 : 1;
-			toFile.add("" + String.format("%.2f", particle.getPosition().getX()) + "\t"
-					+ String.format("%.2f", particle.getPosition().getY()) + "\t"
-					+ String.format("%.2f", particle.getRadio()) + "\t" + zombie + "\t" + person + "\n");
+    	for (int lane=0; lane < lanesCount; lane++){
+    		for(Car currentCar : lanes[lane]){
+    			toFile.add("" + String.format("%.2f", currentCar.getPosition().getX())
+    				+ "\t" + String.format("%.2f", currentCar.getPosition().getY())
+    				+ "\t" + String.format("%.2f", currentCar.getRadio())
+    				+ "\t" + String.format("%.2f", currentCar.getVelocity().getX()) + "\n");
+    		}
     	}
-
-    	 */
 	}
     
     private void writeOutputTxt() {
@@ -221,7 +217,7 @@ public class Algorithm {
 		System.out.println("Starting with " + staticFile + ", " + dynamicFile);
 		
 		Algorithm algorithm= new Algorithm(staticFile, dynamicFile);
-		//algorithm.run();
+		algorithm.run();
 		System.out.println("End");
 	}
 
