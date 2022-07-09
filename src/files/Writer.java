@@ -11,7 +11,7 @@ import java.util.Locale;
 public class Writer {
 	
 	private static final double R_P= 0.9; //Estimated radius of a car
-	private static final double MIN_DISTANCE= 2;
+	private static final double MIN_DISTANCE= 4;
 	private static final double LANE_CENTER= 1.75;
 		
     public Writer(double length, int lanes, int particlesCant, double aggressiveProb, String type) {
@@ -57,7 +57,7 @@ public class Writer {
 		for (int i = 0; i < lanes; i++) {
 			//write particlesCant particles not overlapped
 			while (particles.size() < particlesCant) {
-				double x= (Math.random() * (length - R_P) + R_P);
+				double x= (Math.random() * (length - R_P*2) + R_P*2);
 				double y= LANE_CENTER + i * 2 * LANE_CENTER;
 				
 				Point2D auxPoint = new Point2D.Float();

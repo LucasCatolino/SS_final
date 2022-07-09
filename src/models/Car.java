@@ -16,6 +16,7 @@ public class Car {
     private Vector position;
     private Vector velocity;
     private Heuristic heuristic;
+
     private boolean isAggressive;
     private int lane;
     private final int id;

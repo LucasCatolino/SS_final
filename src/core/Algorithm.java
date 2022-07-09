@@ -14,8 +14,8 @@ import java.util.*;
 
 public class Algorithm {
     //constant
-    private static final double dt = 0.001; //seg
-    private static final double MAX_SIMULATION_TIME = 10; //seg
+    private static final double dt = 0.01; //seg
+    private static final double MAX_SIMULATION_TIME = 200; //seg
     private static final double VISUAL_FIELD = 5; //m
     private static final double REACTION_TIME = 0.75; //seg
 
@@ -114,26 +114,25 @@ public class Algorithm {
         }
     }
 
-    private void getCarsInView(int lane, Car currentCar, double visualField, Set<Car> currentLane,
-                               Set<Car> leftLane, Set<Car> rightLane) {
+    private void getCarsInView(int lane, Car currentCar, double visualField, Set<Car> currentLane, Set<Car> leftLane, Set<Car> rightLane) {
 
         if (lane > 0) {
             for (Car c : lanes[lane - 1]) {
-                if (c.getDistanceTo(currentCar) <= VISUAL_FIELD + 2 * c.getRadio()) {
+                if (c.getDistanceTo(currentCar) <= visualField + 2 * c.getRadio()) {
                     rightLane.add(c);
                 }
             }
         }
         if (lane < lanesCount - 1) {
             for (Car c : lanes[lane + 1]) {
-                if (c.getDistanceTo(currentCar) <= VISUAL_FIELD + 2 * c.getRadio()) {
+                if (c.getDistanceTo(currentCar) <= visualField + 2 * c.getRadio()) {
                     leftLane.add(c);
                 }
             }
         }
 
         for (Car c : lanes[lane]) {
-            if (c.getDistanceTo(currentCar) <= VISUAL_FIELD + 2 * c.getRadio() && !c.equals(currentCar) && c.getPosition().getX() > currentCar.getPosition().getX()) {
+            if (c.getDistanceTo(currentCar) <= visualField + 2 * c.getRadio() && !c.equals(currentCar) && c.getPosition().getX() > currentCar.getPosition().getX()) {
                 currentLane.add(c);
             }
 
@@ -189,13 +188,13 @@ public class Algorithm {
             for (int i = 0; i < carsPerLane; i++) {
                 //Each line has X Y, lane and aggressive
                 xCar = Double.parseDouble(dynamicScanner.next());
-                yCar = Double.parseDouble(dynamicScanner.next());
+                dynamicScanner.next();
                 laneNumber = Integer.parseInt(dynamicScanner.next());
                 aggressiveCar = Integer.parseInt(dynamicScanner.next());
 
                 aggressive = (aggressiveCar == 1);
 
-                Car car = new Car(new Vector(xCar, yCar), new Vector(24, 0), laneNumber, particleRadio, aggressive);
+                Car car = new Car(new Vector(xCar, 0), new Vector(24, 0), laneNumber, particleRadio, aggressive);
 
                 cars.add(car);
             }

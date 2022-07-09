@@ -7,7 +7,7 @@ import java.util.TreeSet;
 
 public class PassiveHeuristic extends Heuristic {
 
-	static final private double PASSIVE_CONST = 5;
+	static final private double PASSIVE_CONST = 3.0;
 	static final private double MAX_TARGET_V = 22;
 	static final private double MIN_TARGET_V = 14;
 
