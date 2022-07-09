@@ -1,10 +1,7 @@
 package models;
 
 
-import core.AggressiveHeuristic;
-import core.Heuristic;
-import core.CPM;
-import core.PassiveHeuristic;
+import core.*;
 
 import java.util.*;
 
@@ -50,7 +47,17 @@ public class Car {
         return id;
     }
 
-
+    //devuelve -1 si no está cerca de ninguna pared, 1 si esta cerca de la derecha, 0 si está cerca de la izquierda
+    public int isCloseToLimit(){
+        double hl = Algorithm.HIGHWAY_LENGTH;
+        if(position.getX() + radio + 5  > hl){
+            return 1;
+        }
+        if(position.getX() - radio - 5 < 0) {
+            return 0;
+        }
+        return -1;
+    }
 
     public Car(Car car){
         position = new Vector(car.position.getX(), car.position.getY());

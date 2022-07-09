@@ -102,7 +102,9 @@ public abstract class Heuristic {
 	}
 
 	public boolean willChange(Car currentCar, Set<Car> carsInView,double frontCarV, boolean isAggressive, double dt){
-
+		if(currentCar.isCloseToLimit() >= 0){
+			return false;
+		}
 		if(carsInView.isEmpty()){
 			return true;
 		}

@@ -14,15 +14,17 @@ import java.util.*;
 
 public class Algorithm {
     //constant
-    private static final double dt = 0.01; //seg
-    private static final double MAX_SIMULATION_TIME = 200; //seg
-    private static final double VISUAL_FIELD = 5; //m
+    public static final double dt = 0.01; //seg
+    public static final double MAX_SIMULATION_TIME = 200; //seg
+    public static final double HIGHWAY_LENGTH = 500;
+    public static final double VISUAL_FIELD = 5; //m
     private static final double REACTION_TIME = 0.75; //seg
 
     //variables del sistema
     //private ArrayList<Car> cars;
     private ArrayList<Car>[] lanes;
 
+    private Car[] carsCloseToLimit;
     private double laneWidth;
     private double highwayLength;
     private int lanesCount;
@@ -47,6 +49,7 @@ public class Algorithm {
 
         while (!endCondition(currentTime)) {
             ArrayList<Car>[] newLanes = new ArrayList[lanesCount];
+            
             for(int lane = 0 ; lane <lanesCount; lane++){
                 newLanes[lane] = new ArrayList<Car>();
             }
@@ -64,7 +67,9 @@ public class Algorithm {
 
 
                     Car newCar = currentCar.next(lane,currentLane, leftLane, rightLane, dt);
+                    if(newCar.isCloseToLimit() == 0){
 
+                    }
                     if(checkPosition(newCar) < 1){
                         newCar.getPosition().sub(new Vector(highwayLength,0));
                     }
