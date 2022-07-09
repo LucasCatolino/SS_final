@@ -50,10 +50,10 @@ public class Car {
     //devuelve -1 si no está cerca de ninguna pared, 1 si esta cerca de la derecha, 0 si está cerca de la izquierda
     public int isCloseToLimit(){
         double hl = Algorithm.HIGHWAY_LENGTH;
-        if(position.getX() + radio + 5  > hl){
+        if(position.getX() + radio + 10  > hl){
             return 1;
         }
-        if(position.getX() - radio - 5 < 0) {
+        if(position.getX() - radio - 10 < 0) {
             return 0;
         }
         return -1;
@@ -130,13 +130,13 @@ public class Car {
     //------------------------------------------
 
     //devuelve una particula con la nueva posicion;
-    public Car next(int laneNumber, Set<Car> currentLane, Set<Car> leftLane, Set<Car> rightLane, double dt){
+    public Car next(int laneNumber, Set<Car> currentLane, Set<Car> leftLane, Set<Car> rightLane,ArrayList<Car> carsInLane, double dt){
 
         Car newCar = new Car(this);
 
 
         //aplica la heurística
-        Vector target = heuristic.getTarget(newCar ,currentLane, laneNumber,leftLane,rightLane,dt);
+        Vector target = heuristic.getTarget(newCar ,currentLane, laneNumber,leftLane,rightLane,carsInLane,dt);
 
         //manejo de velocidades maxima ?????
 

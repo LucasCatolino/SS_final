@@ -4,6 +4,7 @@ package core;
 import models.Car;
 import models.Vector;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 public abstract class Heuristic {
@@ -27,31 +28,52 @@ public abstract class Heuristic {
 		this.hasCrashed = false;
 	}
 
-	public Vector getTarget(Car c, Set<Car> currentLane,int laneNumber, Set<Car> leftLane, Set<Car> rightLane, double dt){
+	public Car getFirstCar(ArrayList<Car> cars){
+		Car toRet = cars.get(0);
+		for(Car c: cars){
+			if(c.getPosition().getX() < toRet.getPosition().getX()){
+				toRet = c;
+			}
+		}
+		return toRet;
+	}
+
+	public Vector getTarget(Car c, Set<Car> currentLane, int laneNumber, Set<Car> leftLane, Set<Car> rightLane, ArrayList<Car> laneCars, double dt){
 		if(hasCrashed){
 			currentV = 0;
 			return new Vector(0,0);
 		}
-
 		if(c.isCloseToLimit() == 1){
-			//estoy en el final
-			if(Algorithm.carsCloseToLimit[c.getLane()] == null){
-				//no hay ningun auto al principio
-				currentV = targetV;
-			}else {
-				Car auxCar = Algorithm.carsCloseToLimit[c.getLane()];
-				auxCar.getPosition().set(auxCar.getPosition().getX() + 500, 0);
-				slowDownCar(auxCar, c);
+			Car car = getFirstCar(laneCars);
+			if(currentLane.isEmpty()){
+				currentV = car.getVelocity().getX() * 0.7;
+				return new Vector(c.getPosition().getX() + 100,0);
 			}
-			return new Vector(c.getPosition().getX() + 100,0);
+
 		}
 
 		if(currentLane.isEmpty()){
+			/*if(c.isCloseToLimit() == 1){
+				//estoy en el final
+				if(Algorithm.carsCloseToLimit[c.getLane()] == null){
+					//no hay ningun auto al principio
+					currentV = targetV;
+				}else {
+					Car auxCar = new Car(Algorithm.carsCloseToLimit[c.getLane()]);
+					//auxCar.getPosition().set(auxCar.getPosition().getX() + 500, 0);
+					//slowDownCar(auxCar, c);
+					currentV = auxCar.getVelocity().getX() * 0.8;
+				}
+				return new Vector(c.getPosition().getX() + 100,0);
+			}
+
+			 */
 			currentV = targetV;
 			return new Vector(c.getPosition().getX() + 100,0);
 		}
 
 		Car frontCar = (Car) currentLane.toArray()[0];
+
 		if(checkCrash(frontCar,c,0)){
 			hasCrashed = true;
 			frontCar.getHeuristic().setHasCrashed(true);

@@ -57,7 +57,7 @@ public class Writer {
 		for (int i = 0; i < lanes; i++) {
 			//write particlesCant particles not overlapped
 			while (particles.size() < particlesCant) {
-				double x= (Math.random() * (length - R_P*2) + R_P*2);
+				double x= (Math.random() * (length - R_P*4) + R_P*2);
 				double y= LANE_CENTER + i * 2 * LANE_CENTER;
 				
 				Point2D auxPoint = new Point2D.Float();

@@ -67,7 +67,12 @@ public class Algorithm {
                     getCarsInView(lane, currentCar, VISUAL_FIELD, currentLane, leftLane, rightLane);
 
 
-                    Car newCar = currentCar.next(lane,currentLane, leftLane, rightLane, dt);
+                    Car newCar = currentCar.next(lane,currentLane, leftLane, rightLane,lanes[lane], dt);
+
+                    if(checkPosition(newCar) < 1){
+                        newCar.getPosition().sub(new Vector(highwayLength,0));
+                    }
+
                     if(newCar.isCloseToLimit() == 0){
                         if(carsCloseToLimit[newCar.getLane()] == null){
                             carsCloseToLimit[newCar.getLane()] = newCar;
@@ -76,9 +81,7 @@ public class Algorithm {
                         }
                     }
 
-                    if(checkPosition(newCar) < 1){
-                        newCar.getPosition().sub(new Vector(highwayLength,0));
-                    }
+
 
                     newLanes[newCar.getLane()].add(newCar);
                 }
@@ -129,21 +132,21 @@ public class Algorithm {
 
         if (lane > 0) {
             for (Car c : lanes[lane - 1]) {
-                if (c.getDistanceTo(currentCar) <= visualField + 2 * c.getRadio()) {
+                if (c.getDistanceTo(currentCar) <= visualField + currentCar.getRadio() + c.getRadio()) {
                     rightLane.add(c);
                 }
             }
         }
         if (lane < lanesCount - 1) {
             for (Car c : lanes[lane + 1]) {
-                if (c.getDistanceTo(currentCar) <= visualField + 2 * c.getRadio()) {
+                if (c.getDistanceTo(currentCar) <= visualField + currentCar.getRadio() + c.getRadio()) {
                     leftLane.add(c);
                 }
             }
         }
 
         for (Car c : lanes[lane]) {
-            if (c.getDistanceTo(currentCar) <= visualField + 2 * c.getRadio() && !c.equals(currentCar) && c.getPosition().getX() > currentCar.getPosition().getX()) {
+            if (c.getDistanceTo(currentCar) <= visualField + currentCar.getRadio() + c.getRadio() && !c.equals(currentCar) && c.getPosition().getX() > currentCar.getPosition().getX()) {
                 currentLane.add(c);
             }
 
