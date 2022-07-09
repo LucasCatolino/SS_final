@@ -24,7 +24,7 @@ public class Algorithm {
     //private ArrayList<Car> cars;
     private ArrayList<Car>[] lanes;
 
-    private Car[] carsCloseToLimit;
+    public static Car[] carsCloseToLimit;
     private double laneWidth;
     private double highwayLength;
     private int lanesCount;
@@ -49,7 +49,8 @@ public class Algorithm {
 
         while (!endCondition(currentTime)) {
             ArrayList<Car>[] newLanes = new ArrayList[lanesCount];
-            
+            carsCloseToLimit = new Car[lanesCount];
+
             for(int lane = 0 ; lane <lanesCount; lane++){
                 newLanes[lane] = new ArrayList<Car>();
             }
@@ -68,8 +69,13 @@ public class Algorithm {
 
                     Car newCar = currentCar.next(lane,currentLane, leftLane, rightLane, dt);
                     if(newCar.isCloseToLimit() == 0){
-
+                        if(carsCloseToLimit[newCar.getLane()] == null){
+                            carsCloseToLimit[newCar.getLane()] = newCar;
+                        }else if(newCar.getPosition().getX() < carsCloseToLimit[newCar.getLane()].getPosition().getX()){
+                            carsCloseToLimit[newCar.getLane()] = newCar;
+                        }
                     }
+
                     if(checkPosition(newCar) < 1){
                         newCar.getPosition().sub(new Vector(highwayLength,0));
                     }

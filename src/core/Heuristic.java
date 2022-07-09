@@ -33,6 +33,19 @@ public abstract class Heuristic {
 			return new Vector(0,0);
 		}
 
+		if(c.isCloseToLimit() == 1){
+			//estoy en el final
+			if(Algorithm.carsCloseToLimit[c.getLane()] == null){
+				//no hay ningun auto al principio
+				currentV = targetV;
+			}else {
+				Car auxCar = Algorithm.carsCloseToLimit[c.getLane()];
+				auxCar.getPosition().set(auxCar.getPosition().getX() + 500, 0);
+				slowDownCar(auxCar, c);
+			}
+			return new Vector(c.getPosition().getX() + 100,0);
+		}
+
 		if(currentLane.isEmpty()){
 			currentV = targetV;
 			return new Vector(c.getPosition().getX() + 100,0);
