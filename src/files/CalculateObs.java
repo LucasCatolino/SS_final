@@ -8,30 +8,25 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 
 import core.Algorithm;
-import models.Vector;
 
 public class CalculateObs {
 	
-	private static final int TIME= 1;
-	private static final double PERCENTAGE= 0.75;
+	private static final double TOTAL_DISTANCE= 1000;
+	private static final int CANT_OF_OBS= 10;
 	
-	private static void calculateVelocity(String staticFile, String dynamicFile, Double zombieV) {
+	private static void calculateVelocity(String staticFile, String dynamicFile, String NLanes, String NPart, String aggressivePart) {
 	    
-		List<String> toFileDistance= new ArrayList<String>();
-		List<String> toFileSpreadingIllness= new ArrayList<String>();
-		
 		//open static file
         InputStream staticStream = Algorithm.class.getClassLoader().getResourceAsStream(staticFile);
         assert staticStream != null;
         Scanner staticScanner = new Scanner(staticStream);
-        int totalParticles= Integer.parseInt(staticScanner.next()) + 1; //+1 because static contains N for humans
-        double spaceRadio= Double.parseDouble(staticScanner.next());
+        int carCount= Integer.parseInt(staticScanner.next()); //First line N
+        double highwayLength= Double.parseDouble(staticScanner.next()); //Secon line A
+        double lanesCount = Integer.parseInt(staticScanner.next()); //Third line n
         staticScanner.close();
 		
 		//open dynamic file
@@ -39,130 +34,101 @@ public class CalculateObs {
         assert dynamicStream != null;
         Scanner dynamicScanner = new Scanner(dynamicStream);
 
-        //Velocity obs
-        double lastTime= 0;
-        int zombiesLastCount= 0;
-        double percentageOfZombies= 0;
-        
         //Distance obs
-        double originalZombieXPrev= 0;
-        double originalZombieYPrev= 0;
-        double originalZombieXAct= 0;
-        double originalZombieYAct= 0;
-        Vector prevPosition= new Vector(0, 0);
-        Vector actPosition= new Vector(0, 0);
-        double z= 0;
+        double[] lastPosition= new double[CANT_OF_OBS];
+        double[] time= new double[CANT_OF_OBS];
+        double[] totalDistance= new double[CANT_OF_OBS];
         
+        initialize(lastPosition);
+        initialize(time);
+        initialize(totalDistance);
+        
+        //Initial values
     	dynamicScanner.next(); //skip N token
     	dynamicScanner.next(); //skip time token
-        originalZombieXPrev= Double.parseDouble(dynamicScanner.next()); //X token
-    	originalZombieYPrev= Double.parseDouble(dynamicScanner.next()); //Y token
-    	dynamicScanner.next(); //skip R token
-		dynamicScanner.next(); //Zombie token
-		dynamicScanner.next(); //skip Person token
-		
-		for (int i = 1; i < totalParticles; i++) {
-        	//X Y R Zombie Person
-    		dynamicScanner.next(); //skip X token
-    		dynamicScanner.next(); //skip Y token
-    		dynamicScanner.next(); //skip R token
-    		int zombie= Integer.parseInt(dynamicScanner.next()); //Zombie token
-    		dynamicScanner.next(); //skip Person token
-    		if (zombie > 0) {
-    			zombiesLastCount ++;
-			}
+    	
+    	for (int i = 0; i < lastPosition.length; i++) {
+    		dynamicScanner.next(); //skip id
+    		dynamicScanner.next(); //skip lane
+    		lastPosition[i]= Double.parseDouble(dynamicScanner.next()); //third token position
+    		dynamicScanner.next(); //skip radius
+    		dynamicScanner.next(); //skip velocity
+		}
+    	
+    	for (int i = CANT_OF_OBS; i < carCount; i++) {
+    		dynamicScanner.next(); //skip id
+    		dynamicScanner.next(); //skip lane
+    		dynamicScanner.next(); //skip position
+    		dynamicScanner.next(); //skip radius
+    		dynamicScanner.next(); //skip velocity
 		}
         
+    	double timeToken= 0;
+    	int idToken= 0;
+    	double position= 0;
+    	double distance= 0;
         while (dynamicScanner.hasNext()) {
-        	zombiesLastCount= 1;
         	dynamicScanner.next(); //skip N token
-        	//Time
-        	lastTime= Double.parseDouble(dynamicScanner.next());
-        	
-        	originalZombieXAct= Double.parseDouble(dynamicScanner.next());
-    		originalZombieYAct= Double.parseDouble(dynamicScanner.next());
-    		
-        	if (lastTime % TIME == 0) {        			
-        		//Update vectors
-        		prevPosition.setX(originalZombieXPrev);
-        		prevPosition.setY(originalZombieYPrev);
-        		actPosition.setX(originalZombieXAct);
-        		actPosition.setY(originalZombieYAct);
-        		
-        		//Update distance
-        		z+= actPosition.getDistanceTo(prevPosition);
-        		
-        		//Add data to print in file
-        		toFileDistance.add("" + (totalParticles - 1) + "\t" + zombieV + "\t" + String.format("%.2f",lastTime) + "\t" + String.format("%.2f",z) + "\n");
-        		
-        		//Next time act will be prev
-            	originalZombieXPrev= originalZombieXAct;
-            	originalZombieYPrev= originalZombieYAct;
-        	}
-        	
-        	dynamicScanner.next(); //skip R token
-    		dynamicScanner.next(); //Zombie token
-    		dynamicScanner.next(); //skip Person token
-    		
-        	for (int i = 1; i < totalParticles; i++) {
-            	//X Y R Zombie Person
-        		dynamicScanner.next(); //skip X token
-        		dynamicScanner.next(); //skip Y token
-        		dynamicScanner.next(); //skip R token
-        		int zombie= Integer.parseInt(dynamicScanner.next()); //Zombie token
-        		dynamicScanner.next(); //skip Person token
-        		if (zombie == 1) {
-        			zombiesLastCount ++;
-				}
+        	timeToken= Double.parseDouble(dynamicScanner.next()); //time token
+
+        	for (int i = 0; i < carCount; i++) {
+        		idToken= Integer.parseInt(dynamicScanner.next()); //id token
+        		if (idToken < CANT_OF_OBS) {
+        			if (totalDistance[idToken] < TOTAL_DISTANCE) {
+        				dynamicScanner.next(); //skip lane
+        				position= Double.parseDouble(dynamicScanner.next()); //third token position
+        				dynamicScanner.next(); //skip radius
+        				dynamicScanner.next(); //skip velocity
+        				distance= Math.abs(position - lastPosition[idToken]);
+        				distance= (distance >= 100) ? highwayLength - distance : distance;
+        				
+        				//update arrays
+        				totalDistance[idToken]= totalDistance[idToken] + distance;
+        				lastPosition[idToken]= position;
+        				time[idToken]= timeToken;
+        			} else {
+        				dynamicScanner.next(); //skip lane
+        				dynamicScanner.next(); //skip position
+        				dynamicScanner.next(); //skip radius
+        				dynamicScanner.next(); //skip velocity
+        			}
+        		} else {
+        			dynamicScanner.next(); //skip lane
+    				dynamicScanner.next(); //skip position
+    				dynamicScanner.next(); //skip radius
+    				dynamicScanner.next(); //skip velocity
+        		}
 			}
-        	
-        	if (lastTime % TIME == 0) {
-        		percentageOfZombies= (double)zombiesLastCount / (double)totalParticles;
-    			toFileSpreadingIllness.add("" + (totalParticles - 1) + "\t" + zombieV + "\t" + String.format("%.2f", lastTime) + "\t" + String.format("%.2f", percentageOfZombies) + "\n");
-        	}
-		}
+    	}
+
         dynamicScanner.close();
-        
-        //TODO: este observable se va
-        /*
-        lastTime= (lastTime == 0) ? 1 : lastTime;
-        double velocity= zombiesLastCount / lastTime;
-        
-        String toPrint= "" + (totalParticles - 1) + "\t" + zombieV + "\t" + velocity + "\n";
-        
-        try {
-            File file = new File("resources/velocities.txt");
-            FileWriter myWriter = new FileWriter("resources/velocities.txt", true);
-            myWriter.write(toPrint);
-            myWriter.close();
-            System.out.println("velocities file created");
-        } catch (IOException e) {
-            System.out.println("IOException ocurred");
-            e.printStackTrace();
-        }
-        System.out.println(toPrint);
-        */
         
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH-mm-ss");
     	LocalTime localTime = LocalTime.now();
     	String timestamp= dtf.format(localTime);
     	
-    	writeToFile(toFileDistance, "distance", (totalParticles-1), zombieV, timestamp);
-        writeToFile(toFileSpreadingIllness, "spreading", (totalParticles-1), zombieV, timestamp);
+    	writeToFile("distance", time, carCount, NLanes, aggressivePart, timestamp);
 	}
 	
-    private static void writeToFile(List<String> toFile, String fileName, int N, double zombieV, String stamp) {
-    	try {
-			File file = new File("resources/" + fileName + "_" + N + "_" + zombieV + "_" + stamp + ".txt");
-			FileWriter myWriter = new FileWriter("resources/" + fileName + "_" + N + "_" + zombieV + "_" + stamp + ".txt");
-			for (Iterator iterator = toFile.iterator(); iterator.hasNext();) {
-				String stringToFile= (String) iterator.next();
+    private static void initialize(double[] array) {
+		for (int i = 0; i < array.length; i++) {
+			array[i]= 0;
+		}
+	}
+
+	private static void writeToFile(String fileName, double[] time, int NPart, String NLanes, String aggressivePart, String stamp) {
+		Locale.setDefault(Locale.US);
+		try {
+			File file = new File("resources/" + fileName + "_" + NLanes + "_" + NPart + "_" + aggressivePart + "_" + stamp + ".txt");
+			FileWriter myWriter = new FileWriter("resources/" + fileName + "_" + NLanes + "_" + NPart + "_" + aggressivePart + "_" + stamp + ".txt");
+			for (int i = 0; i < time.length; i++) {
 				try {
-					myWriter.write(stringToFile);
+					myWriter.write("" + String.format("%.2f",time[i]) + "\n");
 				} catch (Exception e) {
 					System.err.println("IOException");
 				}
 			}
+			
 			myWriter.close();
 	    	System.out.println(fileName + " file created");
         } catch (IOException e) {
@@ -180,17 +146,25 @@ public class CalculateObs {
 		BufferedReader readerDynamic= new BufferedReader(new InputStreamReader(System.in));
 		String dynamicInput = readerDynamic.readLine();
 		
-		System.out.println("Zombie max v (default 2)");
-		BufferedReader readerV= new BufferedReader(new InputStreamReader(System.in));
-		String vInput = readerV.readLine();
+		System.out.println("n lanes");
+		BufferedReader readerN= new BufferedReader(new InputStreamReader(System.in));
+		String NLanes = readerN.readLine();
+		
+		System.out.println("N particles");
+		BufferedReader readerNPart= new BufferedReader(new InputStreamReader(System.in));
+		String NPart = readerNPart.readLine();
+		
+		System.out.println("Percentage of agressive driverss");
+		BufferedReader readerAggressive= new BufferedReader(new InputStreamReader(System.in));
+		String aggressivePart = readerAggressive.readLine();
 		
 		String staticFile= (staticInput.length() == 0) ? "static.txt" : staticInput;
 		String dynamicFile= (dynamicInput.length() == 0) ? "dynamicEnd.txt" : dynamicInput;
-		Double zombieV= (vInput.length() == 0) ? 2 : Double.parseDouble(vInput);
 		
-		System.out.println("Starting with " + staticFile + ", " + dynamicFile + ", V_z= " + zombieV);
+		System.out.println("Starting with " + staticFile + ", " + dynamicFile + ", lanes= " + NLanes
+				+ ", particles= " + NPart + ", agressive= " + aggressivePart);
 
-		calculateVelocity(staticFile, dynamicFile, zombieV);
+		calculateVelocity(staticFile, dynamicFile, NLanes, NPart, aggressivePart);
 		
 		System.out.println("End");
     }
