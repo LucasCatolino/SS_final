@@ -22,7 +22,7 @@ public class Writer {
             FileWriter myWriter = new FileWriter("./resources/" + type + ".txt");
             try {
             	if (type.compareTo("static") == 0) {
-					this.staticFile(length, lanes, particlesCant, myWriter);
+					this.staticFile(length, lanes, particlesCant, aggressiveProb, myWriter);
 				} else {
 					this.dynamicFile(length, lanes, particlesCant, aggressiveProb, myWriter);
 				}
@@ -37,11 +37,12 @@ public class Writer {
         }
     }
     
-	private void staticFile(double length, int lanes, int particlesCant, FileWriter myWriter) throws IOException {
+	private void staticFile(double length, int lanes, int particlesCant, double aggressiveProb, FileWriter myWriter) throws IOException {
 		myWriter.write("" + (particlesCant * lanes)+ "\n"); //N cars
 		myWriter.write("" + length + "\n"); //A
-		myWriter.write("" + lanes + "\n"); //A
+		myWriter.write("" + lanes + "\n"); //n
 		myWriter.write("" + R_P + "\n");
+		myWriter.write("" + aggressiveProb + "\n");
 	}
 
 	private void dynamicFile(double length, int lanes, Integer particlesCant, double aggressiveProb, FileWriter myWriter) throws IOException {
