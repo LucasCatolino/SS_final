@@ -72,7 +72,8 @@ public class CalculateObs {
         int carCount= Integer.parseInt(staticScanner.next()); //First line N
         double highwayLength= Double.parseDouble(staticScanner.next()); //Second line A
         int lanesCount = Integer.parseInt(staticScanner.next()); //Third line n
-        double aggressivePart= Double.parseDouble(staticScanner.next()); //Forth line pa
+        staticScanner.next(); //skip radius
+        double aggressivePart= Double.parseDouble(staticScanner.next()); //Fifth line pa
         staticScanner.close();
 		
 		//open dynamic file
